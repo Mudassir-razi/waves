@@ -1,0 +1,56 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+  
+  #container {
+    display: flex;
+    height: 100%;
+  }
+  
+  #canvas-wrapper {
+    padding-top:10%;
+    position: relative;
+    flex: 1;
+    overflow: auto; /* Enables scrollbars */
+    background: #eee;
+  }
+  
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  #ui-panel {
+    width: 300px;
+    background-color: #f4f4f4;
+    border-left: 1px solid #ccc;
+    padding: 16px;
+    box-sizing: border-box;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }
+  
+  #ui-panel h3 {
+    margin-top: 0;
+  }
+  
+  .control-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 6px;
+  }
+  
+  input[type="range"] {
+    width: 100%;
+  }
+  
