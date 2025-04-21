@@ -12,7 +12,7 @@
       <canvas id="mainLayer" width="800" height="800"></canvas>
     </div>
 
-    <div id="ui-panel">
+   <div id="ui-panel">
       <h3>Controls</h3>
 
       <div class="control-group">
@@ -20,13 +20,16 @@
         <input type="range" id="timeSlider" min="1" max="50" value="1" step="0.5">
         <label for="endTimeSlider">Time stamps</label>
         <input type="range" id="endTimeSlider" min="1" max="300" value="10" step="1">
+        <input type="text" id="signalData" placeholder="Enter signal data">
+        <button id="demoButton">Add signal</button>
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
-  <script src="grid.js"></script>
-  <script src="uiHandlers.js"></script>
-  <script src="main.js"></script>
+  <script type="module" src="grid.js"></script>
+  <script type="module" src="uiHandlers.js"></script>
+  <script type="module" src="main.js"></script>
+  <script type="module" src="signal.js"></script>
 </body>
 </html>

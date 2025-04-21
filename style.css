@@ -6,6 +6,7 @@ html, body {
   }
   
   #container {
+    margin-left: 50px;
     display: flex;
     height: 100%;
   }

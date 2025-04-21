@@ -1,6 +1,8 @@
 // main.js
 
 //Call handler functions to update elements on the page. 
+import { setupUI } from "./uiHandlers.js";
+
 
 window.onload = () => {
     const bg = document.getElementById("bgLayer").getContext("2d");

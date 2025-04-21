@@ -1,47 +1,47 @@
 
-let grid;
+export let grid;
 
 //global functions
-function createGrid(canvas, timeStamp=10, signalCount=1, spaceX=50, spaceY=30){
-    grid = new Grid(canvas, timeStamp, signalCount, spaceX, spaceY);
+export function createGrid(canvas, timeStamp=10, signalCount=10, dx=50, dy=30){
+    grid = new Grid(canvas, timeStamp, signalCount, dx, dy);
     grid.render();
 }
 
-function setTimeStamp(timeStamp){
+export function setTimeStamp(timeStamp){
     grid.timeStamp = timeStamp;
     grid.render();
 }
 
-function setSignalCount(signalCount){
+export function setSignalCount(signalCount){
     grid.signalCount = signalCount;
     grid.render();
 }
 
-function setSpaceX(spaceX){
-    grid.spaceX = spaceX;
+export function setdx(dx){
+    grid.dx = dx;
     grid.render();
 }
 
-function setSpaceY(spaceY){
-    grid.spaceY = spaceY;
+export function setdy(dy){
+    grid.dy = dy;
     grid.render();
 }
 
-class Grid{
-    constructor(canvas, timeStamp=10, signalCount=1, spaceX=50, spaceY=30)
+export class Grid{
+    constructor(canvas, timeStamp=10, signalCount=1, dx=50, dy=30)
     {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
         this.timeStamp = timeStamp;
         this.signalCount = signalCount;
-        this.spaceX = spaceX;
-        this.spaceY = spaceY;
+        this.dx = dx;
+        this.dy = dy;
         console.log(signalCount);
     }
 
     render(){
-        var width = this.timeStamp * this.spaceX;
-        var height = this.signalCount * this.spaceY;
+        var width = this.timeStamp * this.dx;
+        var height = this.signalCount * this.dy;
         
         this.canvas.width = width+2;
         this.canvas.height = height+2;
@@ -51,8 +51,9 @@ class Grid{
         console.log(this.signalCount);
         //horizontal lines
         for(var i = 0; i <= this.signalCount; i++){
-            var y = i * this.spaceY;
+            var y = i * this.dy;
             this.ctx.beginPath();
+            this.ctx.setLineDash([5, 5])
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(width, y);
             this.ctx.stroke();
@@ -60,8 +61,9 @@ class Grid{
 
         //vertical lines
         for(var i = 0; i <= this.timeStamp; i++){
-            var x = i * this.spaceX;
+            var x = i * this.dx;
             this.ctx.beginPath();
+            this.ctx.setLineDash([5, 5])
             this.ctx.moveTo(x, 0);
             this.ctx.lineTo(x, height);
             this.ctx.stroke();

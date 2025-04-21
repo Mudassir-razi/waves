@@ -1,38 +1,113 @@
 
 //This class holds the information regarding each signal
 //Index on the grid, data, color, linewidth etc.
+import { Grid, grid } from "./grid.js";
+
+//list of all signals 
+let signals = [];
+let mainCanvas;
+let dx=0, dy=0, dx1=0;
+
+//parameters
+let textOffset = 50;
+
+export function updateSignal(mousePosX, mousePosY)
+{
+  var x = Math.floor(mousePosX / dx);
+  var y = Math.floor(mousePosY / dy);
+  console.log(x, y);
+  console.log(signals[y]);
+  signals[y].toggleSignal(x);
+}
+
+//renders all the signals on the grid
+export function renderAllSignals()
+{
+    dx = parseInt(grid.dx);
+    dy = parseInt(grid.dy);
+    dx1 = dx/8;
+    mainCanvas.height = grid.canvas.height;
+    mainCanvas.width = grid.canvas.width;
+    var ctx = mainCanvas.getContext("2d");
+
+    for(var i = 0; i < signals.length; i++){
+        var signal = signals[i];
+        signal.renderSignal(ctx);
+    }
+} 
+
+//creates a new signal and adds it to the list of signals
+export function setupSignal(data='')
+{
+    var ctx = mainCanvas.getContext("2d");
+    var signal = new Signal(signals.length);
+    //console.log(grid.dx);
+    //console.log(dx);
+    signal.data = data
+    signal.renderSignal(ctx);
+    signals.push(signal);
+}
+
+export function setupSignalCanvas(canvas)
+{
+  mainCanvas = canvas;
+  dx = parseInt(grid.dx);
+  dy = parseInt(grid.dy);
+  dx1 = dx/8;
+}
+
 class Signal
 {
     constructor(index){
         this.index = index;
-        this.data = [];
+        this.data = '';
         this.text = [];
+        this.name = 'Signal ' + index;
     }
-
-}
-
-//Renderer of the signal
-function renderSignal(ctx, data)
-{
-    for(var i = 0; i < data.length; i++){{
-      if(i > 0)
-      {
-        var currentBit = data[i];
-        var prevBit = data[i-1];
-        
-        if(currentBit == 0 && prevBit == 0)
-        {
-
+    //Renderer of the signal
+    renderSignal(ctx)
+    {
+        var posX = textOffset;
+        var posY = (this.index + 1)* (dy);
+        ctx.fillText(this.name, posX - textOffset, posY-dy/2);
+        for(var i = 0; i < this.data.length; i++){
+          var currentBit = this.data[i];
+          if(i > 0){
+            var prevBit = this.data[i-1]; 
+            if(currentBit == '0' && prevBit == '0')
+            {
+                solid0(ctx, posX, posY);
+            }
+            else if(currentBit == '1' && prevBit == '1')
+            {
+                solid1(ctx, posX, posY);
+            }
+            else if(currentBit == '0' && prevBit == 1)
+            {
+                fallingEdge(ctx, posX, posY);
+            }
+            else if(currentBit == 1 && prevBit == '0')
+            {
+                risingEdge(ctx, posX, posY);
+            }
+            posX += dx;
+          }
         }
-        
-      }
-        
     }
+
+    //Update signal data
+    toggleSignal(x)
+    {
+      var splitData = this.data.split('');
+      if(splitData[x] == '0') splitData[x] = '1';
+      else if (splitData[x] == '1') splitData[x] = '0';
+      this.data = splitData.join('');
+    }
+
 }
 
-var dx = 50;
-var dy = 30;
-var dx1 = dx/5;
+
+
 
 //Draws line between from and to coordinates. 
 function line(ctx, from, to, color = "black", width = 1) {
@@ -141,31 +216,3 @@ class Coordinate {
     }
   }
   
-  //
-  class Grid{
-    constructor(endTime=1, timeSpace=50, verticalSpace=30, scaleX = 1, scaleY = 1, numSignals = 1){
-        this.endTime = endTime;
-        this.timescale = timescale;
-        this.numSignals = numSignals;
-    }
-
-    render(ctx) {
-      var canvasXmax = this.endTime * this.timescale;
-      var canvasYmax = this.numSignals * this.verticalSpace;
-
-      ctx.clearRect(0, 0, canvasXmax, canvasYmax);
-      ctx.fillStyle = "#fdf0ff";
-      //draw horizontal lines
-      
-      for(var i = 0;i <= canvasXmax;i += this.verticalSpace){
-          var p1 = new Coordinate(0, i);
-          line(ctx, p1, p1.right(1200), color="grey");
-      }
-      
-      //draw Vertical lines
-      for(var i = 0;i <= canvasYmax;i += this.timeSpace){
-          var p1 = new Coordinate(i, 0);
-          line(ctx, p1, p1.up(800), color="grey");
-      }
-    }
-  }
