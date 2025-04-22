@@ -6,23 +6,23 @@ import { Grid, grid } from "./grid.js";
 //list of all signals 
 let signals = [];
 let mainCanvas;
-let dx=0, dy=0, dx1=0;
+let dx=0, dy=0, dx1=0, offsetY=5;
 
 //parameters
 let textOffset = 50;
 
 export function updateSignal(mousePosX, mousePosY)
 {
-  var x = Math.floor(mousePosX / dx);
-  var y = Math.floor(mousePosY / dy);
+  var x = Math.floor(mousePosX / dx) - 1;
+  var y = Math.floor(mousePosY / (dy + offsetY)); ;
   console.log(x, y);
-  console.log(signals[y]);
-  signals[y].toggleSignal(x);
+  if(signals.length > y)signals[y].toggleSignal(x);
 }
 
 //renders all the signals on the grid
 export function renderAllSignals()
 {
+    offsetY = parseInt(grid.offsetY);
     dx = parseInt(grid.dx);
     dy = parseInt(grid.dy);
     dx1 = dx/8;
@@ -67,31 +67,30 @@ class Signal
     //Renderer of the signal
     renderSignal(ctx)
     {
-        var posX = textOffset;
-        var posY = (this.index + 1)* (dy);
+        var posX = dx;
+        var posY = (this.index + 1)* (dy + offsetY);
         ctx.fillText(this.name, posX - textOffset, posY-dy/2);
         for(var i = 0; i < this.data.length; i++){
           var currentBit = this.data[i];
-          if(i > 0){
-            var prevBit = this.data[i-1]; 
-            if(currentBit == '0' && prevBit == '0')
-            {
-                solid0(ctx, posX, posY);
-            }
-            else if(currentBit == '1' && prevBit == '1')
-            {
-                solid1(ctx, posX, posY);
-            }
-            else if(currentBit == '0' && prevBit == 1)
-            {
-                fallingEdge(ctx, posX, posY);
-            }
-            else if(currentBit == 1 && prevBit == '0')
-            {
-                risingEdge(ctx, posX, posY);
-            }
-            posX += dx;
+          var prevBit = i == 0 ? this.data[i] : this.data[i-1]; 
+          if(currentBit == '0' && prevBit == '0')
+          {
+              solid0(ctx, posX, posY);
           }
+          else if(currentBit == '1' && prevBit == '1')
+          {
+              solid1(ctx, posX, posY);
+          }
+          else if(currentBit == '0' && prevBit == 1)
+          {
+              fallingEdge(ctx, posX, posY);
+          }
+          else if(currentBit == 1 && prevBit == '0')
+          {
+              risingEdge(ctx, posX, posY);
+          }
+          posX += dx;
+          
         }
     }
 

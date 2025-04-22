@@ -28,7 +28,7 @@ export function setdy(dy){
 }
 
 export class Grid{
-    constructor(canvas, timeStamp=10, signalCount=1, dx=50, dy=30)
+    constructor(canvas, timeStamp=10, signalCount=1, dx=50, dy=30, offsetY=5)
     {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
@@ -36,7 +36,7 @@ export class Grid{
         this.signalCount = signalCount;
         this.dx = dx;
         this.dy = dy;
-        console.log(signalCount);
+        this.offsetY = offsetY;
     }
 
     render(){
@@ -48,10 +48,9 @@ export class Grid{
         this.ctx.clearRect(0, 0, width, height);
         this.ctx.fillStyle = "white";
         this.ctx.strokeStyle = "grey";
-        console.log(this.signalCount);
         //horizontal lines
         for(var i = 0; i <= this.signalCount; i++){
-            var y = i * this.dy;
+            var y = i * (this.dy + this.offsetY);
             this.ctx.beginPath();
             this.ctx.setLineDash([5, 5])
             this.ctx.moveTo(0, y);
