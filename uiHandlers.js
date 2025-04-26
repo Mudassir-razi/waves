@@ -9,9 +9,11 @@ export function setupUI(ctx) {
     var prevX, prevY;
     var isdragging = false;
 
+    //Taking in UI elements
     const timeScaleSlider  = document.getElementById("timeSlider");
     const endTimeSlider     = document.getElementById("endTimeSlider");
     const demoButton       = document.getElementById("demoButton");
+    const skewSlider       = document.getElementById("skewSlider");
 
     const bgCanvas = document.getElementById("bgLayer");
     const mainCanvas = document.getElementById("mainLayer");
@@ -20,6 +22,8 @@ export function setupUI(ctx) {
     createGrid(bgCanvas);
     setupSignalCanvas(mainCanvas);
 
+
+    ///...................................UI ELEMENTS..............................
     //Endtime slider functionality
     endTimeSlider.addEventListener('input', (event) =>
     {
@@ -27,7 +31,6 @@ export function setupUI(ctx) {
         uiCanvas.width = settings.timeStamp * settings.dx;
         renderGrid();
         renderAllSignals();
-
     });
     
     //Time scale slider functionality
@@ -37,7 +40,15 @@ export function setupUI(ctx) {
         renderGrid();
         renderAllSignals();
     });
-
+    
+    //Signal skew slider functionality
+    skewSlider.addEventListener('input', (event) =>
+    {
+        settings.skew = event.target.value;
+        renderGrid();
+        renderAllSignals();
+    });
+    
     //Add new signal button functionality
     demoButton.addEventListener('click', (event) =>
     {
@@ -49,12 +60,14 @@ export function setupUI(ctx) {
         renderAllSignals();
         
     });
+    //..............................///////////////////////......................
 
+    ////..........................MOUSE EVENTS HANDLERS..........................
     //mouse down functionality
     mainCanvas.addEventListener("mousedown", (event) =>
     {
-        //console.log("Mouse down");
-        //console.log(settings.timeStamp);
+        //for ignoring right click
+        if(event.button === 2)return;
         const rect = mainCanvas.getBoundingClientRect();
         prevX = event.clientX - rect.left;
         prevY = event.clientY - rect.top;
@@ -71,7 +84,6 @@ export function setupUI(ctx) {
             const curY = event.clientY - rect.top;
             uiContext.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
             drawSelectRectangle(uiContext, prevX, prevY, curX, curY);
-            console.log( prevX, prevY, curX, curY);
         }
         
     });
@@ -99,7 +111,7 @@ export function setupUI(ctx) {
         }
         renderAllSignals();
     });
-
+    //.......................///////////////////////////////...................
 }
 
 

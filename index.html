@@ -3,31 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <title>Wave</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" rel="icon" href="favicon.png" />
 </head>
 <body>
   <div id="container">
-    <div id="canvas-wrapper">
-      <canvas id="bgLayer" width="800" height="300"></canvas>
-      <canvas id="extraLayer" width="800" height="300"></canvas>
-      <canvas id="mainLayer" width="800" height="300"></canvas>
+    <!-- Title screen-->
+    <div>
+      <h1>Wave</h1>
     </div>
 
-   <div id="ui-panel">
+    <div id="output-panel">
+      
+      <!-- Signal names to be filled by script-->
+      <div id="signal-names">
+      
+      </div>
 
+      <!-- Canvas -->
+      <div id="canvas-wrapper">
+        <canvas id="bgLayer" width="800" height="300"></canvas>
+        <canvas id="extraLayer" class="extra-canvas" width="800" height="300"></canvas>
+        <canvas id="mainLayer" class="extra-canvas" width="800" height="300"></canvas>
+      </div>
+    </div>
+   
+   <div id="ui-panel">
       <div class="control-group">
         <h3>Global controls</h3>
-        <label for="timeScaleSlider">Time Scale</label>
-        <input type="range" id="timeSlider" min="15" max="80" value="50" step="1">
         <label for="endTimeSlider">Time stamps</label>
         <input type="range" id="endTimeSlider" min="1" max="300" value="10" step="1">
-        <input type="text" id="signalData" placeholder="Enter signal data">
-        <button id="demoButton">Add signal</button>
+        <label for="timeScaleSlider">Time Scale</label>
+        <input type="range" id="timeSlider" min="15" max="80" value="50" step="1">
+        <label for="skewSlider">Signal skew</label>
+        <input type="range" id="skewSlider" min="0.001" max="0.25" value="0.125" step="0.002">
       </div>
 
       <div class="control-group">
         <h3>Controls</h3>
-        <button id="demoButton">Dont press now</button>
+        <input type="text" id="signalData" placeholder="Enter signal data">
+        <button id="demoButton">Add signal</button>
       </div>
     </div>
   </div>

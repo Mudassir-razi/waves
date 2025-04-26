@@ -7,6 +7,7 @@ export function createGrid(canvas){
     grid.render();
 }
 
+//renders grid on the canvas
 export function renderGrid(){grid.render();}
 
 export class Grid{
@@ -33,13 +34,13 @@ export class Grid{
         this.canvas.width = width+2;
         this.canvas.height = height+2;
         this.ctx.clearRect(0, 0, width, height);
-        this.ctx.fillStyle = "white";
-        this.ctx.strokeStyle = "grey";
+        this.ctx.fillStyle = settings.gridColor;
+        this.ctx.strokeStyle = settings.gridColor;
         //horizontal lines
         for(var i = 0; i <= signalCount; i++){
             var y = i * ( dy + offsetY);
             this.ctx.beginPath();
-            this.ctx.setLineDash([1, 5])
+            this.ctx.setLineDash([5, 5])
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(width, y);
             this.ctx.stroke();
@@ -49,7 +50,7 @@ export class Grid{
         for(var i = 0; i <= timeStamp; i++){
             var x = i * dx;
             this.ctx.beginPath();
-            this.ctx.setLineDash([2, 5])
+            this.ctx.setLineDash([5, 5])
             this.ctx.moveTo(x, 0);
             this.ctx.lineTo(x, height);
             this.ctx.stroke();

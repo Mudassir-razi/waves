@@ -5,6 +5,7 @@ html, body {
     overflow: hidden;
     display: flex;
     font-family: sans-serif;
+    background-color: rgb(9, 23, 51);
   }
   
   #container {
@@ -15,21 +16,43 @@ html, body {
     width: 100%;
   }
   
+  #output-panel{
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    background-color: #4e515f;
+    border-left: 1px solid #ccc;
+  }
+
+  #signal-names
+  {
+    margin-top : 2%;
+    margin-left : 2%;
+    width : 80px;
+    position: relative;
+  }
+
   #canvas-wrapper {
     margin-top:2%;
     margin-right:2%;
     position: relative;
     flex: 1;
     overflow: auto; /* Enables scrollbars */
-    background: #dadada;
+    background: #000000;
   }
   
   canvas {
     position: absolute;
+    background-color: black;
     top: 0;
     left: 0;
   }
-  
+
+  .extra-canvas {
+    background-color: transparent;
+  }
+
   #ui-panel {
     width: 100%;
     margin-top:2%;
@@ -37,7 +60,7 @@ html, body {
     height: 250px;
     display: flex;
     flex-direction: row;
-    background-color: #f4f4f4;
+    background-color: #4e515f;
     border-left: 1px solid #ccc;
     box-sizing: border-box;
     padding: 16px;
@@ -55,9 +78,41 @@ html, body {
 
   label {
     display: block;
+    color: white;
     margin-bottom: 1px;
   }
   
+  .signal-label{
+    height: 20px;
+    text-align: right;
+    background-color: #363842;
+    color: white;
+    font-size: 12px;
+    padding: 5px;
+    padding-bottom: 10px;
+    vertical-align: baseline;
+  }
+
+  .signal-label:hover {
+    background-color: #6d7599;
+  }
+
+  .signal-label.selected {
+    background-color: #2e44a7;
+  }
+
+  h1{
+    color: white;
+    font-size: 28px;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-left: 1%;
+  }
+
+  h3 {
+    color: white;
+    
+  }
+
   input[type="range"] {
     width: 100%;
     margin-top:5%;
