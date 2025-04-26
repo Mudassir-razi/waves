@@ -24,6 +24,7 @@ export function setupUI(ctx) {
     endTimeSlider.addEventListener('input', (event) =>
     {
         settings.timeStamp = event.target.value;
+        uiCanvas.width = settings.timeStamp * settings.dx;
         renderGrid();
         renderAllSignals();
 
@@ -103,7 +104,7 @@ export function setupUI(ctx) {
 
 
 function drawSelectRectangle(ctx, x, y, x1, y1) {
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = "grey";
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(x, y, x1 - x, y1 - y);

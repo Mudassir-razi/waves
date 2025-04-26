@@ -8,21 +8,26 @@
 <body>
   <div id="container">
     <div id="canvas-wrapper">
-      <canvas id="bgLayer" width="800" height="800"></canvas>
-      <canvas id="extraLayer" width="800" height="800"></canvas>
-      <canvas id="mainLayer" width="800" height="800"></canvas>
+      <canvas id="bgLayer" width="800" height="300"></canvas>
+      <canvas id="extraLayer" width="800" height="300"></canvas>
+      <canvas id="mainLayer" width="800" height="300"></canvas>
     </div>
 
    <div id="ui-panel">
-      <h3>Controls</h3>
 
       <div class="control-group">
+        <h3>Global controls</h3>
         <label for="timeScaleSlider">Time Scale</label>
         <input type="range" id="timeSlider" min="15" max="80" value="50" step="1">
         <label for="endTimeSlider">Time stamps</label>
         <input type="range" id="endTimeSlider" min="1" max="300" value="10" step="1">
         <input type="text" id="signalData" placeholder="Enter signal data">
         <button id="demoButton">Add signal</button>
+      </div>
+
+      <div class="control-group">
+        <h3>Controls</h3>
+        <button id="demoButton">Dont press now</button>
       </div>
     </div>
   </div>

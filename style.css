@@ -1,23 +1,27 @@
 html, body {
     margin: 0;
     height: 100%;
+    width: 100%;
     overflow: hidden;
+    display: flex;
     font-family: sans-serif;
   }
   
   #container {
-    margin-left: 50px;
-    margin-top : 50px;
+    margin-left:2%;
     display: flex;
+    flex-direction: column;
     height: 100%;
+    width: 100%;
   }
   
   #canvas-wrapper {
-    padding-top:10%;
+    margin-top:2%;
+    margin-right:2%;
     position: relative;
     flex: 1;
     overflow: auto; /* Enables scrollbars */
-    background: #eee;
+    background: #dadada;
   }
   
   canvas {
@@ -27,16 +31,16 @@ html, body {
   }
   
   #ui-panel {
-    width: 300px;
+    width: 100%;
+    margin-top:2%;
+    margin-right:10px;
+    height: 250px;
+    display: flex;
+    flex-direction: row;
     background-color: #f4f4f4;
     border-left: 1px solid #ccc;
-    padding: 16px;
     box-sizing: border-box;
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    overflow-y: auto;
+    padding: 16px;
   }
   
   #ui-panel h3 {
@@ -44,15 +48,24 @@ html, body {
   }
   
   .control-group {
-    margin-bottom: 20px;
+    padding : 16px;
+    display: flex;
+    flex-direction: column;
   }
-  
+
   label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 1px;
   }
   
   input[type="range"] {
     width: 100%;
+    margin-top:5%;
   }
-  
+
+  input[type="text"] {
+    width: 95%;
+    margin-top:5%;
+    margin-bottom: 5%;
+  }
+
