@@ -1,14 +1,21 @@
 // uiHandlers.js
-import { createGrid, setTimeStamp, setdx } from "./grid.js";
-import { setupSignal, setupSignalCanvas, renderAllSignals, updateSignal } from "./signal.js";
+import { createGrid, renderGrid } from "./grid.js";
+import { setupSignal, setupSignalCanvas, renderAllSignals, updateSignal, updateSignals } from "./signal.js";
+import { settings } from "./config.js";
 
 export function setupUI(ctx) {
+
+    //mouse position variables
+    var prevX, prevY;
+    var isdragging = false;
+
     const timeScaleSlider  = document.getElementById("timeSlider");
     const endTimeSlider     = document.getElementById("endTimeSlider");
     const demoButton       = document.getElementById("demoButton");
 
     const bgCanvas = document.getElementById("bgLayer");
     const mainCanvas = document.getElementById("mainLayer");
+    const uiCanvas = document.getElementById("extraLayer");
 
     createGrid(bgCanvas);
     setupSignalCanvas(mainCanvas);
@@ -16,16 +23,17 @@ export function setupUI(ctx) {
     //Endtime slider functionality
     endTimeSlider.addEventListener('input', (event) =>
     {
-        var val = event.target.value;
-        setTimeStamp(val);
+        settings.timeStamp = event.target.value;
+        renderGrid();
         renderAllSignals();
+
     });
     
     //Time scale slider functionality
     timeScaleSlider.addEventListener('input', (event) =>
     {
-        var val = event.target.value;
-        setdx(val);
+        settings.dx = event.target.value;
+        renderGrid();
         renderAllSignals();
     });
 
@@ -33,19 +41,72 @@ export function setupUI(ctx) {
     demoButton.addEventListener('click', (event) =>
     {
         let data = document.getElementById("signalData").value;
+        if(!data)data = '101011010';
+        settings.signalCount += 1;
         setupSignal(data);
+        renderGrid();
         renderAllSignals();
+        
     });
 
-    //button click and mouse position functionality
-    mainCanvas.addEventListener('click', (event) =>
+    //mouse down functionality
+    mainCanvas.addEventListener("mousedown", (event) =>
     {
+        //console.log("Mouse down");
+        //console.log(settings.timeStamp);
+        const rect = mainCanvas.getBoundingClientRect();
+        prevX = event.clientX - rect.left;
+        prevY = event.clientY - rect.top;
+        isdragging = ~isdragging
+    });
+
+    mainCanvas.addEventListener('mousemove', (event) =>
+    {
+        if(isdragging){
+            //console.log("Mouse move");
+            var uiContext = uiCanvas.getContext("2d");
+            const rect = mainCanvas.getBoundingClientRect();
+            const curX = event.clientX - rect.left;
+            const curY = event.clientY - rect.top;
+            uiContext.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
+            drawSelectRectangle(uiContext, prevX, prevY, curX, curY);
+            console.log( prevX, prevY, curX, curY);
+        }
+        
+    });
+
+    //mouse up functionality
+    mainCanvas.addEventListener('mouseup', (event) =>
+    {
+
         const rect = mainCanvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        updateSignal(x, y);
+        const uiContext = uiCanvas.getContext("2d");
+        console.log("Mouse up");
+        isdragging = false;
+        uiContext.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
+
+        if(Math.sqrt(Math.pow(x - prevX, 2) + Math.pow(y - prevY, 2)) < 5)
+        {
+            console.log("Click detected");
+            updateSignal(x, y);
+        }
+        else {
+            updateSignals(prevX, prevY, x, y);
+            console.log("Drag detected");
+        }
         renderAllSignals();
     });
-   
+
+}
+
+
+function drawSelectRectangle(ctx, x, y, x1, y1) {
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(x, y, x1 - x, y1 - y);
+    ctx.setLineDash([]);
 }
   

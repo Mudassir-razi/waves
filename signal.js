@@ -1,33 +1,51 @@
 
 //This class holds the information regarding each signal
 //Index on the grid, data, color, linewidth etc.
-import { Grid, grid } from "./grid.js";
+import { settings } from "./config.js";
 
 //list of all signals 
 let signals = [];
 let mainCanvas;
-let dx=0, dy=0, dx1=0, offsetY=5;
-
-//parameters
-let textOffset = 50;
+let dx, dy, dx1, offsetY; 
 
 export function updateSignal(mousePosX, mousePosY)
 {
-  var x = Math.floor(mousePosX / dx) - 1;
-  var y = Math.floor(mousePosY / (dy + offsetY)); ;
-  console.log(x, y);
+  var {x, y} = getMouseXY(mousePosX, mousePosY);
+  console.log("X: " + x + " Y: " + y);
   if(signals.length > y)signals[y].toggleSignal(x);
 }
+
+export function updateSignals(mousePosX, mousePosY, mousePosX1, mousePosY1)
+{
+  var {x: x2, y: y2} = getMouseXY(mousePosX, mousePosY);
+  var {x : x1, y : y1} = getMouseXY(mousePosX1, mousePosY1);
+  if( y2 != y1)return;
+  else{
+    console.log("Changing sequence");
+    var max = Math.max(x2, x1);
+    var min = Math.min(x2, x1);
+    for(var i = min; i <= max; i++){
+      if(signals.length > y1)
+        {
+          var bit = signals[y1].data[x2];
+          console.log("Replacement bits with " + bit);
+          signals[y1].replaceSignal(i, bit);
+        }
+    }
+  }
+}
+
+
 
 //renders all the signals on the grid
 export function renderAllSignals()
 {
-    offsetY = parseInt(grid.offsetY);
-    dx = parseInt(grid.dx);
-    dy = parseInt(grid.dy);
+    offsetY = settings.offsetY;
+    dx = settings.dx;
+    dy = settings.dy;
     dx1 = dx/8;
-    mainCanvas.height = grid.canvas.height;
-    mainCanvas.width = grid.canvas.width;
+    mainCanvas.height = settings.signalCount * settings.dy;
+    mainCanvas.width  = settings.timeStamp * settings.dx;
     var ctx = mainCanvas.getContext("2d");
 
     for(var i = 0; i < signals.length; i++){
@@ -51,9 +69,6 @@ export function setupSignal(data='')
 export function setupSignalCanvas(canvas)
 {
   mainCanvas = canvas;
-  dx = parseInt(grid.dx);
-  dy = parseInt(grid.dy);
-  dx1 = dx/8;
 }
 
 class Signal
@@ -64,12 +79,13 @@ class Signal
         this.text = [];
         this.name = 'Signal ' + index;
     }
+
     //Renderer of the signal
     renderSignal(ctx)
     {
-        var posX = dx;
-        var posY = (this.index + 1)* (dy + offsetY);
-        ctx.fillText(this.name, posX - textOffset, posY-dy/2);
+        var posX = settings.dx;
+        var posY = (this.index + 1)* (settings.dy + settings.offsetY);
+        ctx.fillText(this.name, posX - settings.textOffset, posY-settings.dy/2);
         for(var i = 0; i < this.data.length; i++){
           var currentBit = this.data[i];
           var prevBit = i == 0 ? this.data[i] : this.data[i-1]; 
@@ -81,15 +97,19 @@ class Signal
           {
               solid1(ctx, posX, posY);
           }
-          else if(currentBit == '0' && prevBit == 1)
+          else if(currentBit == '.'){
+            prevBit == '1' ? solid1(ctx, posX, posY) : solid0(ctx, posX, posY);
+            this.replaceSignal(i, prevBit);
+          }
+          else if(currentBit == '0' && prevBit == '1')
           {
               fallingEdge(ctx, posX, posY);
           }
-          else if(currentBit == 1 && prevBit == '0')
+          else if(currentBit == '1' && prevBit == '0')
           {
               risingEdge(ctx, posX, posY);
           }
-          posX += dx;
+          posX += settings.dx;
           
         }
     }
@@ -103,10 +123,24 @@ class Signal
       this.data = splitData.join('');
     }
 
+    //replace signal bit
+    replaceSignal(x, bit)
+    {
+      if(!bit)return;
+      var splitData = this.data.split('');
+      splitData[x] = bit;
+      this.data = splitData.join('');
+    }
+
 }
 
 
-
+function getMouseXY(mouseX, mouseY)
+{
+    const x = Math.floor(mouseX / settings.dx) - 1;
+    const y = Math.floor(mouseY / (settings.dy + settings.offsetY));
+    return {x, y};
+}
 
 //Draws line between from and to coordinates. 
 function line(ctx, from, to, color = "black", width = 1) {
@@ -122,7 +156,7 @@ function line(ctx, from, to, color = "black", width = 1) {
 function solid0(ctx, x, y)
 {
     var p1 = new Coordinate(x, y);
-    var p2 = p1.right(dx);
+    var p2 = p1.right(settings.dx);
     line(ctx, p1, p2);
 }
 //solid 1
@@ -130,7 +164,7 @@ function solid1(ctx, x, y)
 {
     var p1 = new Coordinate(x, y);
     p1     = p1.down(dy);
-    var p2 = p1.right(dx);
+    var p2 = p1.right(settings.dx);
     line(ctx, p1, p2);
 }
 
@@ -141,7 +175,7 @@ function risingEdge(ctx, x, y)
     var p1 = new Coordinate(x, y);
     var p2 = p1.right(dx1);
     var p3 = p2.right(dx1).down(dy);
-    var p4 = p3.right(dx-2*dx1);
+    var p4 = p3.right(settings.dx-2*dx1);
 
     line(ctx, p1, p2);
     line(ctx, p2, p3);
@@ -154,7 +188,7 @@ function fallingEdge(ctx, x, y)
     var p1 = new Coordinate(x, y-dy);
     var p2 = p1.right(dx1);
     var p3 = p2.right(dx1).up(dy);
-    var p4 = p3.right(dx-2*dx1);
+    var p4 = p3.right(settings.dx-2*dx1);
 
     line(ctx, p1, p2);
     line(ctx, p2, p3);
@@ -166,7 +200,7 @@ function fanoutUp(ctx, x, y)
 {
     var p1 = new Coordinate(x, y);
     risingEdge(ctx, x, y);
-    line(ctx, p1, p1.right(dx));
+    line(ctx, p1, p1.right(settings.dx));
 }
 
 // Draws --\# at (x, y)
@@ -174,7 +208,7 @@ function fanoutDown(ctx, x, y)
 {
     var p1 = new Coordinate(x, y-dy);
     fallingEdge(ctx, x, y);
-    line(ctx, p1, p1.right(dx));
+    line(ctx, p1, p1.right(settings.dx));
 }
 
 
