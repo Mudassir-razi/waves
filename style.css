@@ -97,7 +97,15 @@ html, body {
     background-color: #6d7599;
   }
 
-  .signal-label.selected {
+  .signal-label-selected {
+    height: 20px;
+    text-align: right;
+    background-color: #363842;
+    color: white;
+    font-size: 12px;
+    padding: 5px;
+    padding-bottom: 10px;
+    vertical-align: baseline;
     background-color: #2e44a7;
   }
 

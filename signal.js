@@ -2,19 +2,87 @@
 //This class holds the information regarding each signal
 //Index on the grid, data, color, linewidth etc.
 import { settings } from "./config.js";
+import { pushSignalName } from "./uiHandlers.js";
 
 //list of all signals 
 let signals = [];
 let mainCanvas;
 let nameDiv;
 let dx, dy, dx1, offsetY;
+let lastSignalIndex;
 
+//...........................................CORE FUNCTIONS...............
+//sets up canvas for the signals to render
+export function setupSignalCanvas(canvas)
+{
+  mainCanvas = canvas;
+  nameDiv = document.getElementById("signal-names");
+  lastSignalIndex = 0;
+}
+
+//renders all the signals on the grid
+export function renderAllSignals()
+{
+    offsetY =  parseInt(settings.offsetY);
+    dx = parseInt(settings.dx);
+    dy = parseInt(settings.dy);
+    dx1 = dx*parseFloat(settings.skew);
+
+    console.log("Rendering signals with Settings: dx: " + dx + " dy: " + dy);
+    mainCanvas.height = settings.signalCount * dy;
+    mainCanvas.width  = settings.timeStamp * dx;
+    var ctx = mainCanvas.getContext("2d");
+
+    for(var i = 0; i < signals.length; i++){
+        var signal = signals[i];
+        signal.renderSignal(ctx, i);
+    }
+} 
+
+//creates a new signal and adds it to the list of signals
+export function setupSignal(data='', color = settings.signalColor, skew = settings.skew, width = 1)
+{
+    var ctx = mainCanvas.getContext("2d");
+    var signal = new Signal(lastSignalIndex);
+    lastSignalIndex += 1;
+    //console.log(grid.dx);
+    //console.log(dx);
+    signal.data = data
+    signal.color = color;
+    signal.skew = skew;
+    signal.lineWidth = width;
+    signal.renderSignal(ctx);
+    signals.push(signal);
+
+    //pur the name on the name div
+    pushSignalName("signal" + signal.index, signal.index);   
+}
+
+export function removeSignal(index)
+{
+  var removeIndex;
+  for(var i = 0; i < signals.length; i++){
+    if(signals[i].index == index){
+      removeIndex = i;
+      break;
+    }
+  }
+  signals.splice(removeIndex, 1);
+  settings.signalCount -= 1;
+}
+
+//...................................///////////////////////.............................
+
+
+//............................................Functionality with User events.............
+//update function for a single mouse click
 export function updateSignal(mousePosX, mousePosY)
 {
   var {x, y} = getMouseXY(mousePosX, mousePosY);
   if(signals.length > y)signals[y].toggleSignal(x);
 }
 
+//update function for a mouse drag event
 export function updateSignals(mousePosX, mousePosY, mousePosX1, mousePosY1)
 {
   var {x: x2, y: y2} = getMouseXY(mousePosX, mousePosY);
@@ -35,51 +103,10 @@ export function updateSignals(mousePosX, mousePosY, mousePosX1, mousePosY1)
     }
   }
 }
+//.................................////////////////////////////////...............................
 
 
 
-//renders all the signals on the grid
-export function renderAllSignals()
-{
-    offsetY =  parseInt(settings.offsetY);
-    dx = parseInt(settings.dx);
-    dy = parseInt(settings.dy);
-    dx1 = dx*parseFloat(settings.skew);
-
-    console.log("Rendering signals with Settings: dx: " + dx + " dy: " + dy);
-    mainCanvas.height = settings.signalCount * dy;
-    mainCanvas.width  = settings.timeStamp * dx;
-    var ctx = mainCanvas.getContext("2d");
-
-    for(var i = 0; i < signals.length; i++){
-        var signal = signals[i];
-        signal.renderSignal(ctx);
-    }
-} 
-
-//creates a new signal and adds it to the list of signals
-export function setupSignal(data='')
-{
-    var ctx = mainCanvas.getContext("2d");
-    var signal = new Signal(signals.length);
-    //console.log(grid.dx);
-    //console.log(dx);
-    signal.data = data
-    signal.renderSignal(ctx);
-    signals.push(signal);
-
-    //pur the name on the name div
-    const label = document.createElement("label");
-    label.textContent = signal.name;
-    label.className = "signal-label";
-    nameDiv.appendChild(label);
-}
-
-export function setupSignalCanvas(canvas)
-{
-  mainCanvas = canvas;
-  nameDiv = document.getElementById("signal-names");
-}
 
 class Signal
 {
@@ -88,13 +115,19 @@ class Signal
         this.data = '';
         this.text = [];
         this.name = 'Signal ' + index;
+        this.color = settings.signalColor;
+        this.lineWidth = 1;
+        this.skew = settings.skew;
     }
 
     //Renderer of the signal
-    renderSignal(ctx)
+    renderSignal(ctx, idx = this.index)
     {
         var posX = 0;
-        var posY = (this.index + 1)* (dy + offsetY);
+        var posY = (idx + 1)* (dy + offsetY);
+        ctx.fillStyle = this.color;
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.lineWidth;
         for(var i = 0; i < this.data.length; i++){
           var currentBit = this.data[i];
           var prevBit = i == 0 ? this.data[i] : this.data[i-1];
@@ -152,9 +185,7 @@ function getMouseXY(mouseX, mouseY)
 }
 
 //Draws line between from and to coordinates. 
-function line(ctx, from, to, color = settings.signalColor, width = 1) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
+function line(ctx, from, to, width = 1) {
     ctx.beginPath();
     ctx.moveTo(from.x, from.y);
     ctx.lineTo(to.x, to.y);

@@ -1,7 +1,9 @@
 // uiHandlers.js
 import { createGrid, renderGrid } from "./grid.js";
-import { setupSignal, setupSignalCanvas, renderAllSignals, updateSignal, updateSignals } from "./signal.js";
+import { setupSignal, setupSignalCanvas, renderAllSignals, updateSignal, updateSignals, removeSignal } from "./signal.js";
 import { settings } from "./config.js";
+
+var selectedSignalIndex = -1;
 
 export function setupUI(ctx) {
 
@@ -10,14 +12,18 @@ export function setupUI(ctx) {
     var isdragging = false;
 
     //Taking in UI elements
-    const timeScaleSlider  = document.getElementById("timeSlider");
+    const timeScaleSlider  = document.getElementById("timeScaleSlider");
     const endTimeSlider     = document.getElementById("endTimeSlider");
     const demoButton       = document.getElementById("demoButton");
     const skewSlider       = document.getElementById("skewSlider");
+    const signalSkewSlider = document.getElementById("signalSkewSlider");  
+    const signalColorPicker = document.getElementById("signalColorpicker");
+    const signalWidthSlider = document.getElementById("signalWidthSlider");
 
     const bgCanvas = document.getElementById("bgLayer");
     const mainCanvas = document.getElementById("mainLayer");
     const uiCanvas = document.getElementById("extraLayer");
+    const nameDiv = document.getElementById("signal-names");
 
     createGrid(bgCanvas);
     setupSignalCanvas(mainCanvas);
@@ -55,7 +61,7 @@ export function setupUI(ctx) {
         let data = document.getElementById("signalData").value;
         if(!data)data = '101011010';
         settings.signalCount += 1;
-        setupSignal(data);
+        setupSignal(data, signalColorPicker.value, signalSkewSlider.value, signalWidthSlider.value);
         renderGrid();
         renderAllSignals();
         
@@ -112,14 +118,57 @@ export function setupUI(ctx) {
         renderAllSignals();
     });
     //.......................///////////////////////////////...................
+
+    //..........................KEYBOARD EVENTS HANDLERS.......................
+
+    window.addEventListener('keydown', (event) =>
+    {
+        console.log("Key pressed: " + event.key);
+        if(event.key === 'Delete' && selectedSignalIndex !== -1) {
+            console.log("Deleting signal: " + selectedSignalIndex);
+            nameDiv.removeChild(document.getElementById(selectedSignalIndex));
+            removeSignal(selectedSignalIndex);
+            selectedSignalIndex = -1;
+        }
+        renderGrid();
+        renderAllSignals();
+    });
+
+
+    //.......................///////////////////////////////...................
 }
 
 
+//draws a rectangle on the UI for selected area
 function drawSelectRectangle(ctx, x, y, x1, y1) {
     ctx.strokeStyle = "grey";
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(x, y, x1 - x, y1 - y);
     ctx.setLineDash([]);
+}
+
+//Signals revoke it to pushs new signal names in the name tab
+export function pushSignalName(name, index) {
+
+     //pur the name on the name div 
+     const nameDiv = document.getElementById("signal-names");
+     const label = document.createElement("label");
+     label.textContent = name;
+     label.className = "signal-label";
+     label.id = index;
+     label.addEventListener("click", (event) =>
+     {
+        var labels = nameDiv.getElementsByClassName("signal-label-selected");
+        for(var i = 0; i < labels.length; i++){
+            var element = labels[i];
+            element.className = "signal-label";
+        }
+        event.target.className = "signal-label-selected";
+        console.log("Clicked on signal name: " + event.target.id);
+        selectedSignalIndex = parseInt(event.target.id);
+     });
+     nameDiv.appendChild(label);
+
 }
   
